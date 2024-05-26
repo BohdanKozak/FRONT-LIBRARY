@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список книг</title>
+    <style>
+        /* Ваші стилі залишаються без змін */
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            padding-bottom: 70px;
+        }
+        
+        header {
+            background-color: black;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        h1 {
+            font-size: 24px;
+            color: black;
+            margin-bottom: 10px;
+        }
+        
+        .bookіs {
+            margin: 20px auto;
+            max-width: 80%;
+            text-align: center;
+        }
+        
+        .sort-buttons {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .sort-buttons button {
+            padding: 8px 16px;
+            background-color: white;
+            color: black;
+            border: 1px solid black;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 5px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .sort-buttons button:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 80%;
+            margin: 0 auto;
+        }
+        
+        .add-book-button {
+            padding: 10px 20px;
+            background-color: #fff;
+            color: black;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        
+        .add-book-button:hover {
+            background-color: #ccc;
+        }
+        
+        .header-image {
+            text-align: center;
+            position: relative;
+        }
+        
+        .header-image img {
+            width: 100%;
+            max-height: 100vh;
+            object-fit: cover;
+            filter: blur(4px);
+            height: 450px;
+        }
+        
+        .header-text {
+            position: absolute;
+            font-family: 'Courier New', sans-serif;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 64px;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .book-list-container {
+            max-width: 80%;
+            margin: 0 auto;
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        
+        .book-card {
+            max-width: 100%;
+            height: 100%;
+            background-color: #fff;
+            box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .book-card img {
+            width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            height: auto;
+        }
+        
+        .book-card h2 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        
+        .book-card p {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .book-card .buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .book-card button {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .book-card button:hover {
+            background-color: #0056b3;
+        }
+        
+        footer {
+            background-color: black;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            bottom: 0;
+            width: 100%;
+            position: fixed;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-content">
+            <h1>MyLibrary</h1>
+            <a href="addBookForm.html" class="add-book-button">Додати книгу</a>
+        </div>
+    </header>
+    <div class="header-image">
+        <img src="https://i.pinimg.com/564x/3c/4c/67/3c4c6701721f7031b95d5553c9e7122f.jpg" alt="Library Image">
+        <div class="header-text">Create future with us</div>
+    </div>
+    <div class="bookіs">
+        <h1>Список книг</h1>
+        <div class="sort-buttons">
+            <button onclick="sortByAuthor()">Сортувати за прізвищем</button>
+            <button onclick="sortByYear()">Сортувати за роком</button>
+        </div>
+    </div>
+    <div class="book-list-container" id="book-list-container">
+        <!-- Книги будуть завантажені тут за допомогою JavaScript -->
+    </div>
+    <footer>
+        &copy; 2024 MyLibrary
+    </footer>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            fetch('http://localhost:8080/books/all')
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.querySelector('.book-list-container');
+                    data.forEach(book => {
+                        const bookCard = document.createElement('div');
+                        bookCard.className = 'book-card';
+                        bookCard.innerHTML = `
+                    <img src="${book.imageUrl}" alt="Book Cover">
+                    <h2>${book.title}</h2>
+                    <p>${book.author}</p>
+                    <p>Рік видання: <span>${book.year}</span></p>
+                    <p>Кількість екземплярів: <span>${book.quantity}</span></p>
+                    <div class="buttons">
+                        <button class="delete-button" onclick="deleteBook('${book.title}')">Delete</button>
+                        <button class="add-button" onclick="addBook('${book.title}')">Add</button>
+                    </div>
+                `;
+                        container.appendChild(bookCard);
+                    });
+                })
+                .catch(error => console.error('Error fetching books:', error));
+        });
+
+        function deleteBook(title) {
+            fetch(`http://localhost:8080/books/${title}`, { // Передаємо лише рядок
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    console.log('Book successfully deleted');
+                    window.location.reload();
+                })
+                .catch(error => console.error('There was a problem with your fetch operation:', error));
+        }
+
+
+        function addBook(title) {
+            fetch(`http://localhost:8080/books/${title}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    console.log('Book successfully added');
+                    window.location.reload();
+                })
+                .catch(error => console.error('There was a problem with your fetch operation:', error));
+        }
+
+
+        function sortByYear() {
+            const booksContainer = document.querySelector('.book-list-container');
+            const books = Array.from(booksContainer.querySelectorAll('.book-card'));
+
+            books.sort((a, b) => {
+                const yearA = parseInt(a.querySelector('span').innerText);
+                const yearB = parseInt(b.querySelector('span').innerText);
+                return yearA - yearB;
+            });
+
+            books.forEach(book => booksContainer.appendChild(book));
+        }
+
+        function sortByAuthor() {
+            const booksContainer = document.querySelector('.book-list-container');
+            const books = Array.from(booksContainer.querySelectorAll('.book-card'));
+
+            books.sort((a, b) => {
+                const authorA = a.querySelector('p:nth-child(2)').textContent.trim();
+                const authorB = b.querySelector('p:nth-child(2)').textContent.trim();
+                return authorA.localeCompare(authorB);
+            });
+
+            books.forEach(book => booksContainer.appendChild(book));
+        }
+    </script>
+</body>
+
+</html>
